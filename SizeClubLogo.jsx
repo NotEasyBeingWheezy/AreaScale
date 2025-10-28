@@ -30,17 +30,17 @@ function resizeToTargetArea(item, targetArea) {
     var newWidth = newWidthCM * CM_TO_PT;
     var newHeight = newHeightCM * CM_TO_PT;
     
-    // Store the center point before resizing
-    var centerX = item.left + (item.width / 2);
-    var centerY = item.top - (item.height / 2);
+    // Store the bottom middle point before resizing
+    var bottomMiddleX = item.left + (item.width / 2);
+    var bottomMiddleY = item.top - item.height;
     
     // Resize the item
     item.width = newWidth;
     item.height = newHeight;
     
-    // Reposition to maintain center point
-    item.left = centerX - (newWidth / 2);
-    item.top = centerY + (newHeight / 2);
+    // Reposition to maintain bottom middle point
+    item.left = bottomMiddleX - (newWidth / 2);
+    item.top = bottomMiddleY + newHeight;
     
     return {
         originalWidth: widthCM,
@@ -65,7 +65,7 @@ function main() {
     
     // Check if something is selected
     if (selection.length === 0) {
-        alert("No shapes selected. *******");
+        alert("Please select at least one shape to resize.");
         return;
     }
     
@@ -110,7 +110,25 @@ function main() {
                 message += "  New: " + r.newWidth.toFixed(2) + " × " + r.newHeight.toFixed(2) + " cm (" + r.newArea.toFixed(2) + " cm²)\n";
                 message += "  Scale: " + (r.scaleFactor * 100).toFixed(2) + "%\n\n";
             }
-            alert(message);
+            
+            // Create a custom dialog with proper sizing
+            var resultDialog = new Window("dialog", "Resize Results");
+            resultDialog.orientation = "column";
+            resultDialog.alignChildren = ["fill", "top"];
+            
+            var textGroup = resultDialog.add("group");
+            textGroup.orientation = "column";
+            textGroup.alignChildren = ["left", "top"];
+            
+            var resultText = textGroup.add("edittext", undefined, message, {multiline: true, scrolling: true});
+            resultText.size = [400, 200];
+            resultText.active = false;
+            
+            var btnGroup = resultDialog.add("group");
+            btnGroup.alignment = "center";
+            btnGroup.add("button", undefined, "OK", {name: "ok"});
+            
+            resultDialog.show();
         } else {
             alert("No valid shapes were found in the selection.");
         }
