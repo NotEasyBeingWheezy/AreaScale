@@ -39,11 +39,11 @@ def main():
         
         new_width, new_height = resize_to_target_area(width, height, target_area=4500)
         
-        print(f"Original dimensions: {width:.2f} mm × {height:.2f} mm")
-        print(f"Original area: {width * height:.2f} mm²")
-        print(f"Aspect ratio: {width/height:.2f}:1")
-        print(f"\nNew dimensions: {new_width:.2f} mm × {new_height:.2f} mm")
-        print(f"New area: {new_width * new_height:.2f} mm²")
+        print(f"Original dimensions: {width:.3f} mm × {height:.3f} mm")
+        print(f"Original area: {width * height:.3f} mm²")
+        print(f"Aspect ratio: {width/height:.3f}:1")
+        print(f"\nNew dimensions: {new_width:.3f} mm × {new_height:.3f} mm")
+        print(f"New area: {new_width * new_height:.3f} mm²")
         
     except ValueError:
         print("Error: Please provide valid numeric values for width and height")
