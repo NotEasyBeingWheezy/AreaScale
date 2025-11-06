@@ -2,7 +2,7 @@
 // This script resizes selected shapes to a target area while maintaining aspect ratio
 
 // Configuration
-var TARGET_AREA = 45; // Target area in square centimeters
+var TARGET_AREA = 0; // Target area in square centimeters
 
 function resizeToTargetArea(item, targetArea) {
     // Get current dimensions in points (Illustrator's unit)
@@ -71,11 +71,17 @@ function main() {
     
     // Ask user for target area (optional)
     var dialog = new Window("dialog", "Resize to Target Area");
-    dialog.add("statictext", undefined, "Enter target area (cm²):");
+    dialog.preferredSize = [300, 150]; // Set overall dialog size
+
+    dialog.add("statictext", undefined, "Enter Logo Target Area (cm):");
     var areaInput = dialog.add("edittext", undefined, TARGET_AREA.toString());
-    areaInput.characters = 10;
-    dialog.add("statictext", undefined, "(Note: 50 cm² = 5000 mm²)");
+    areaInput.preferredSize = [200, 25]; // Control input field size
+
     
+    dialog.add("statictext", undefined, "Club Logo = 45cm").justify = "center";
+    dialog.add("statictext", undefined, "Hat Logo = 30cm").justify = "center";
+    dialog.add("statictext", undefined, "Beanie, Sunhat, Bucket Hat, Sliders Logo = 15cm").justify = "center";
+
     var buttonGroup = dialog.add("group");
     buttonGroup.add("button", undefined, "OK", {name: "ok"});
     buttonGroup.add("button", undefined, "Cancel", {name: "cancel"});
