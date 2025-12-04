@@ -1,4 +1,4 @@
-// AreaScale v2.0.0 build
+// AreaScale v2.1.0 build
 
 // ========================================
 // CONFIG
