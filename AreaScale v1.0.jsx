@@ -79,7 +79,7 @@ function main() {
 
     
     dialog.add("statictext", undefined, "Club Logo = 45cm").justify = "center";
-    dialog.add("statictext", undefined, "Hat Logo = 30cm").justify = "center";
+    dialog.add("statictext", undefined, "Cap Logo = 25cm").justify = "center";
     dialog.add("statictext", undefined, "Beanie, Sunhat, Bucket Hat, Sliders Logo = 15cm").justify = "center";
 
     var buttonGroup = dialog.add("group");
