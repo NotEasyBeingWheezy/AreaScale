@@ -285,7 +285,6 @@ function main() {
 
             // Create result dialog
             var resultDialog = new Window("dialog", "Processing Results");
-            // @ts-ignore
             resultDialog.orientation = "column"; // orientation is not deprecated, this is an ExtendScript Window, not browser Window
             resultDialog.alignChildren = ["fill", "top"];
 
