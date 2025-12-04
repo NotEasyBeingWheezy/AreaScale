@@ -1,4 +1,4 @@
-// AreaScale v2.1.0 build
+// AreaScale v2.1.1 build
 
 // ========================================
 // CONFIG
@@ -23,7 +23,7 @@ var PRESETS = {
             referencePoint: "OBJECT_BOTTOM_CENTER"  // Reference point for positioning (see options below)
         }
     },
-    "Cap": {
+    "Cap Logo": {
         targetArea: 25,              // Set your desired surface area in cm²
         position: {
             x: 5.0,                  // Set X coordinate in cm
@@ -31,7 +31,7 @@ var PRESETS = {
             referencePoint: "OBJECT_BOTTOM_CENTER"
         }
     },
-    "Beanie, Slider, Bucket, Sunhat": {
+    "Beanie, Slider, Bucket hat, Sunhat Logo": {
         targetArea: 15,              // Set your desired surface area in cm²
         position: {
             x: 4.0,                  // Set X coordinate in cm
@@ -285,7 +285,8 @@ function main() {
 
             // Create result dialog
             var resultDialog = new Window("dialog", "Processing Results");
-            resultDialog.orientation = "column";
+            // @ts-ignore
+            resultDialog.orientation = "column"; // orientation is not deprecated, this is an ExtendScript Window, not browser Window
             resultDialog.alignChildren = ["fill", "top"];
 
             var textGroup = resultDialog.add("group");
