@@ -15,12 +15,20 @@ var PRESETS = {
             referencePoint: "OBJECT_BOTTOM_CENTER"  // Reference point for positioning (see options below)
         }
     },
+    "Front Panel Club Logo": {
+        targetArea: 45,              // Set your desired surface area in cm²
+        position: {
+            x: 25.5,                  // Set X coordinate in cm
+            y: 11,                  // Set Y coordinate in cm
+            referencePoint: "OBJECT_BOTTOM_CENTER"  // Reference point for positioning (see options below)
+        }
+    },
     "Cap": {
         targetArea: 25,              // Set your desired surface area in cm²
         position: {
             x: 5.0,                  // Set X coordinate in cm
             y: 8.0,                  // Set Y coordinate in cm
-            referencePoint: "ARTBOARD_ORIGIN"
+            referencePoint: "OBJECT_BOTTOM_CENTER"
         }
     },
     "Beanie, Slider, Bucket, Sunhat": {
@@ -34,33 +42,34 @@ var PRESETS = {
 };
 
 // ========================================
-// REFERENCE POINT OPTIONS
+// REFERENCE POINTS
 // ========================================
-// Available reference points for positioning:
+// Available reference points for positioning (all coordinates measured from artboard top-left):
 //
-// "ARTBOARD_ORIGIN"       - Measures from top-left corner of artboard (0,0)
-//                           Object's top-left corner will be placed at specified x,y
+// "ARTBOARD_ORIGIN"       - Places object's top-left corner at x,y from artboard top-left
+//                           Same as OBJECT_TOP_LEFT (kept for backward compatibility)
 //
 // "ARTBOARD_CENTER"       - Measures from center of artboard
-//                           Object's center will be placed at specified x,y from artboard center
+//                           Object's center will be placed at x,y from artboard center
 //
-// "OBJECT_CENTER"         - Places object's center at specified absolute coordinates
-//                           X,Y are absolute positions on the artboard
+// "OBJECT_CENTER"         - Places object's center at x,y from artboard top-left
+//                           Useful for centering objects at specific positions
 //
-// "OBJECT_TOP_LEFT"       - Places object's top-left corner at specified coordinates
-//                           X,Y are absolute positions on the artboard
+// "OBJECT_TOP_LEFT"       - Places object's top-left corner at x,y from artboard top-left
+//                           Same as ARTBOARD_ORIGIN
 //
-// "OBJECT_BOTTOM_CENTER"  - Places object's bottom-center at specified coordinates
-//                           X,Y are absolute positions on the artboard
+// "OBJECT_BOTTOM_CENTER"  - Places object's bottom-center at x,y from artboard top-left
+//                           Useful for aligning objects by their bottom edge
 //
 // ========================================
 
 // Unit conversion constants
-var PT_TO_CM = 0.0352778;  // 1 point = 0.0352778 cm
-var CM_TO_PT = 1 / PT_TO_CM;
+// 1 point = 1/72 inch, 1 inch = 2.54 cm, 1 point = 2.54/72 cm
+var PT_TO_CM = 2.54 / 72;  // = 0.03527777... cm per point
+var CM_TO_PT = 72 / 2.54;  // = 28.34645669... points per cm
 
 // ========================================
-// CORE FUNCTIONS
+// CORE FUNCTION
 // ========================================
 
 /**
@@ -70,9 +79,10 @@ var CM_TO_PT = 1 / PT_TO_CM;
  * @returns {Object} Result object with dimensions and scaling info
  */
 function resizeToTargetArea(item, targetArea) {
-    // Get current dimensions in points
-    var currentWidth = item.width;
-    var currentHeight = item.height;
+    // Get current dimensions using geometric bounds for precision
+    var bounds = item.geometricBounds; // [left, top, right, bottom]
+    var currentWidth = bounds[2] - bounds[0];
+    var currentHeight = bounds[1] - bounds[3];
 
     // Convert to centimeters
     var widthCM = currentWidth * PT_TO_CM;
@@ -88,13 +98,9 @@ function resizeToTargetArea(item, targetArea) {
     var newWidthCM = widthCM * scaleFactor;
     var newHeightCM = heightCM * scaleFactor;
 
-    // Convert back to points
-    var newWidth = newWidthCM * CM_TO_PT;
-    var newHeight = newHeightCM * CM_TO_PT;
-
-    // Apply new dimensions
-    item.width = newWidth;
-    item.height = newHeight;
+    // Resize using the resize method with top-left anchor point
+    // This gives us precise control over the transformation
+    item.resize(scaleFactor * 100, scaleFactor * 100, true, true, true, true, scaleFactor * 100, Transformation.TOPLEFT);
 
     return {
         originalWidth: widthCM,
@@ -131,43 +137,57 @@ function positionItem(item, x, y, referencePoint, doc) {
     var artboardCenterX = artboardLeft + (artboardWidth / 2);
     var artboardCenterY = artboardTop - (artboardHeight / 2);
 
+    // Use geometric bounds for precise positioning
+    var bounds = item.geometricBounds; // [left, top, right, bottom]
+    var itemWidth = bounds[2] - bounds[0];
+    var itemHeight = bounds[1] - bounds[3];
+
+    var targetLeft, targetTop;
+
     switch(referencePoint) {
         case "ARTBOARD_ORIGIN":
             // Position from top-left corner of artboard (object's top-left at x,y from artboard origin)
-            item.left = artboardLeft + xPt;
-            item.top = artboardTop - yPt;
+            targetLeft = artboardLeft + xPt;
+            targetTop = artboardTop - yPt;
             break;
 
         case "ARTBOARD_CENTER":
             // Position from center of artboard (object's center at x,y from artboard center)
-            item.left = artboardCenterX + xPt - (item.width / 2);
-            item.top = artboardCenterY - yPt + (item.height / 2);
+            targetLeft = artboardCenterX + xPt - (itemWidth / 2);
+            targetTop = artboardCenterY - yPt + (itemHeight / 2);
             break;
 
         case "OBJECT_CENTER":
-            // Place object's center at absolute coordinates
-            item.left = xPt - (item.width / 2);
-            item.top = yPt + (item.height / 2);
+            // Place object's center at x,y from artboard top-left
+            targetLeft = artboardLeft + xPt - (itemWidth / 2);
+            targetTop = artboardTop - yPt + (itemHeight / 2);
             break;
 
         case "OBJECT_TOP_LEFT":
-            // Place object's top-left at absolute coordinates
-            item.left = xPt;
-            item.top = yPt;
+            // Place object's top-left at x,y from artboard top-left
+            targetLeft = artboardLeft + xPt;
+            targetTop = artboardTop - yPt;
             break;
 
         case "OBJECT_BOTTOM_CENTER":
-            // Place object's bottom-center at absolute coordinates
-            item.left = xPt - (item.width / 2);
-            item.top = yPt + item.height;
+            // Place object's bottom-center at x,y from artboard top-left
+            targetLeft = artboardLeft + xPt - (itemWidth / 2);
+            targetTop = artboardTop - yPt + itemHeight;
             break;
 
         default:
             // Default to artboard origin if unknown reference point
-            item.left = artboardLeft + xPt;
-            item.top = artboardTop - yPt;
+            targetLeft = artboardLeft + xPt;
+            targetTop = artboardTop - yPt;
             break;
     }
+
+    // Calculate the translation needed
+    var deltaX = targetLeft - bounds[0];
+    var deltaY = targetTop - bounds[1];
+
+    // Move the item precisely using translate
+    item.translate(deltaX, deltaY);
 }
 
 /**
