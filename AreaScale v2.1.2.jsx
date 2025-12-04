@@ -1,48 +1,48 @@
-// AreaScale v2.1.1 build
+// AreaScale v2.1.2 build
 
 // ========================================
-// CONFIG
+// PRESET CONFIG
 // ========================================
 
-// Preset definitions for different logo types
+// Presets definitions for different logo types
 // You can modify the targetArea (in cm²) and position coordinates (in cm)
 var PRESETS = {
-    "Club Logo": {
-        targetArea: 45,              // Set your desired surface area in cm²
+    "Club Logo": { // Preset name
+        targetArea: 45, // Set desired surface area in cm²
         position: {
-            x: 6.0,                  // Set X coordinate in cm
-            y: 11.0,                  // Set Y coordinate in cm
-            referencePoint: "OBJECT_BOTTOM_CENTER"  // Reference point for positioning (see options below)
+            x: 6.0, // Set X coordinate in cm
+            y: 11.0, // Set Y coordinate in cm
+            referencePoint: "OBJECT_BOTTOM_CENTER" // Reference point for positioning (see REFERENCE POINT CONFIG)
         }
     },
     "Front Panel Club Logo": {
-        targetArea: 45,              // Set your desired surface area in cm²
+        targetArea: 45,
         position: {
-            x: 25.5,                  // Set X coordinate in cm
-            y: 11,                  // Set Y coordinate in cm
-            referencePoint: "OBJECT_BOTTOM_CENTER"  // Reference point for positioning (see options below)
+            x: 25.5,
+            y: 11,
+            referencePoint: "OBJECT_BOTTOM_CENTER"
         }
     },
     "Cap Logo": {
-        targetArea: 25,              // Set your desired surface area in cm²
+        targetArea: 25,
         position: {
-            x: 5.0,                  // Set X coordinate in cm
-            y: 8.0,                  // Set Y coordinate in cm
+            x: 5.0,
+            y: 8.0,
             referencePoint: "OBJECT_BOTTOM_CENTER"
         }
     },
     "Beanie, Slider, Bucket hat, Sunhat Logo": {
-        targetArea: 15,              // Set your desired surface area in cm²
+        targetArea: 15,
         position: {
-            x: 4.0,                  // Set X coordinate in cm
-            y: 7.0,                  // Set Y coordinate in cm
+            x: 4.0,
+            y: 7.0,
             referencePoint: "OBJECT_BOTTOM_CENTER"
         }
     }
 };
 
 // ========================================
-// REFERENCE POINTS
+// REFERENCE POINT CONFIG
 // ========================================
 // Available reference points for positioning (all coordinates measured from artboard top-left):
 //
@@ -69,7 +69,7 @@ var PT_TO_CM = 2.54 / 72;  // = 0.03527777... cm per point
 var CM_TO_PT = 72 / 2.54;  // = 28.34645669... points per cm
 
 // ========================================
-// CORE FUNCTION
+// CORE FUNCTIONS
 // ========================================
 
 /**
@@ -79,7 +79,7 @@ var CM_TO_PT = 72 / 2.54;  // = 28.34645669... points per cm
  * @returns {Object} Result object with dimensions and scaling info
  */
 function resizeToTargetArea(item, targetArea) {
-    // Get current dimensions using geometric bounds for precision
+    // Get current dimensions using geometric bounds
     var bounds = item.geometricBounds; // [left, top, right, bottom]
     var currentWidth = bounds[2] - bounds[0];
     var currentHeight = bounds[1] - bounds[3];
@@ -99,7 +99,7 @@ function resizeToTargetArea(item, targetArea) {
     var newHeightCM = heightCM * scaleFactor;
 
     // Resize using the resize method with top-left anchor point
-    // This gives us precise control over the transformation
+    // This gives precise control over the transformation
     item.resize(scaleFactor * 100, scaleFactor * 100, true, true, true, true, scaleFactor * 100, Transformation.TOPLEFT);
 
     return {
@@ -210,7 +210,7 @@ function main() {
     }
 
     // Create dialog with dropdown menu
-    var dialog = new Window("dialog", "Resize and Position");
+    var dialog = new Window("dialog", "Resize and Position Logo");
     dialog.preferredSize = [350, 150];
 
     // Add label for dropdown
@@ -230,8 +230,8 @@ function main() {
     presetDropdown.preferredSize = [300, 25];
 
     // Add informational text
-    var infoText = dialog.add("statictext", undefined, "This will automatically resize and position selected objects.");
-    infoText.preferredSize = [300, 40];
+    var infoText = dialog.add("statictext", undefined, "This will automatically resize and position the selected logo.");
+    infoText.preferredSize = [350, 40];
     infoText.graphics.foregroundColor = infoText.graphics.newPen(infoText.graphics.PenType.SOLID_COLOR, [0.5, 0.5, 0.5], 1);
 
     // Add buttons
@@ -285,7 +285,7 @@ function main() {
 
             // Create result dialog
             var resultDialog = new Window("dialog", "Processing Results");
-            resultDialog.orientation = "column"; // orientation is not deprecated, this is an ExtendScript Window, not browser Window
+            resultDialog.orientation = "column"; // Orientation is not deprecated, this is an ExtendScript Window, not a browser Window
             resultDialog.alignChildren = ["fill", "top"];
 
             var textGroup = resultDialog.add("group");
