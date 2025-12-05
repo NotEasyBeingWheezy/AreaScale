@@ -98,9 +98,17 @@ function resizeToTargetArea(item, targetArea) {
     var newWidthCM = widthCM * scaleFactor;
     var newHeightCM = heightCM * scaleFactor;
 
-    // Resize using the resize method with top-left anchor point
-    // This gives precise control over the transformation
-    item.resize(scaleFactor * 100, scaleFactor * 100, true, true, true, true, scaleFactor * 100, Transformation.TOPLEFT);
+    // Resize using the ExtendScript resize method, which accepts the following 8 parameters:
+    item.resize(
+        scaleFactor * 100,  // scaleX - horizontal scale percentage
+        scaleFactor * 100,  // scaleY - vertical scale percentage
+        true,               // changePositions - scale object positions
+        true,               // changeFillPatterns - scale fill patterns
+        true,               // changeFillGradients - scale fill gradients  
+        true,               // changeStrokePattern - scale stroke patterns
+        scaleFactor * 100,  // changeLineWidths - scale stroke widths
+        Transformation.TOPLEFT  // scaleAbout - transform from top-left anchor
+);
 
     return {
         originalWidth: widthCM,
@@ -137,7 +145,7 @@ function positionItem(item, x, y, referencePoint, doc) {
     var artboardCenterX = artboardLeft + (artboardWidth / 2);
     var artboardCenterY = artboardTop - (artboardHeight / 2);
 
-    // Use geometric bounds for precise positioning
+    // Use geometric bounds for positioning
     var bounds = item.geometricBounds; // [left, top, right, bottom]
     var itemWidth = bounds[2] - bounds[0];
     var itemHeight = bounds[1] - bounds[3];
@@ -277,8 +285,8 @@ function main() {
             for (var j = 0; j < results.length; j++) {
                 var r = results[j];
                 message += "Shape " + (j + 1) + ":\n";
-                message += "  Original: " + r.originalWidth.toFixed(2) + " × " + r.originalHeight.toFixed(2) + " cm (" + r.originalArea.toFixed(2) + " cm²)\n";
-                message += "  New: " + r.newWidth.toFixed(2) + " × " + r.newHeight.toFixed(2) + " cm (" + r.newArea.toFixed(2) + " cm²)\n";
+                message += "  Original: " + r.originalWidth.toFixed(2) + " x " + r.originalHeight.toFixed(2) + " cm (" + r.originalArea.toFixed(2) + " cm²)\n";
+                message += "  New: " + r.newWidth.toFixed(2) + " x " + r.newHeight.toFixed(2) + " cm (" + r.newArea.toFixed(2) + " cm²)\n";
                 message += "  Scale: " + (r.scaleFactor * 100).toFixed(2) + "%\n";
                 message += "  Position: (" + r.positionX.toFixed(2) + " cm, " + r.positionY.toFixed(2) + " cm) from " + r.referencePoint + "\n\n";
             }
